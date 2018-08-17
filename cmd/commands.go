@@ -50,29 +50,37 @@ var dhcp_leases = &cobra.Command{
 
         leases, _ := pf.GetDhcp()
 
-        header := []string{
-            "ip-address",
-            "mac-address",
-            "hostname",
-            "description",
-            "start",
-            "end",
-            "online",
-            "Type",
-        }
+        header := strings.Split(cmd.Flag("info").Value.String(), ",")
+
         // generate
         var data [][]string
         for _, v := range leases {
-            data = append(data, []string{
-                v.Ip,
-                v.Mac,
-                v.Hostname,
-                v.Desc,
-                v.Start,
-                v.End,
-                v.Online,
-                v.Ltype,
-            })
+            temp := []string{}
+            for _, h := range header {
+                switch h {
+                    case "manual":
+                        temp = append(temp, v.Manual)
+                    case "ip":
+                        temp = append(temp, v.Ip)
+                    case "mac":
+                        temp = append(temp, v.Mac)
+                    case "manufacture":
+                        temp = append(temp, v.Manufacture)
+                    case "hostname":
+                        temp = append(temp, v.Hostname)
+                    case "desc":
+                        temp = append(temp, v.Desc)
+                    case "start":
+                        temp = append(temp, v.Start)
+                    case "end":
+                        temp = append(temp, v.End)
+                    case "online":
+                        temp = append(temp, v.Online)
+                    case "ltype":
+                        temp = append(temp, v.Ltype)
+                }
+            }
+            data = append(data, temp)
         }
         pfsense.MakeTable(header, data)
         return
@@ -173,7 +181,7 @@ func init() {
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// helloCmd.PersistentFlags().String("foo", "", "A help for foo")
+	dhcp_leases.PersistentFlags().String("info", "ip,mac,hostname,desc,start,end,online,ltype", "lease information to display - manual,ip,mac,manufacture,hostname,desc,start,end,online,ltype")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
