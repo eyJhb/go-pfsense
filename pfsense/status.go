@@ -7,9 +7,10 @@ import (
 )
 
 type dhcp_lease struct {
-    Manual bool
+    Manual string
     Ip string
     Mac string
+    Manufacture string
     Hostname string
     Desc string
     Start string
@@ -45,10 +46,20 @@ func (pf *Pfsense) GetDhcp() ([]dhcp_lease, error) {
         }
 
         tds := s.Find("td")
+        mac := eqStrip(tds, 2)
+        manu := ""
+
+        if len(mac) > 17 {
+            manu = strings.TrimSpace(mac[17:])
+            manu = manu[1:len(manu)-1]
+            mac = mac[:17]
+        }
+
         dhcp_leases = append(dhcp_leases, dhcp_lease{
-            false,
+            "N",
             eqStrip(tds, 1),
-            eqStrip(tds, 2),
+            mac,
+            manu,
             eqStrip(tds, 3),
             eqStrip(tds, 4),
             eqStrip(tds, 5),
