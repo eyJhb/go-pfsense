@@ -1,9 +1,9 @@
 package main
 
 import (
-  "pfsense/cmd"
+	"github.com/eyJhb/go-pfsense/cmd"
 )
 
 func main() {
-  cmd.Execute()
+	cmd.Execute()
 }
